@@ -1,0 +1,12 @@
+using LibHac.Ns;
+using System;
+
+namespace LibHac.Arp.Impl;
+
+public interface IReader : IDisposable
+{
+    Result GetApplicationLaunchProperty(out ApplicationLaunchProperty launchProperty, ulong processId);
+    Result GetApplicationLaunchPropertyWithApplicationId(out ApplicationLaunchProperty launchProperty, Ncm.ApplicationId applicationId);
+    Result GetApplicationControlProperty(out ApplicationControlProperty controlProperty, ulong processId);
+    Result GetApplicationControlPropertyWithApplicationId(out ApplicationControlProperty controlProperty, Ncm.ApplicationId applicationId);
+}
