@@ -1,0 +1,89 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  build:
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.runner }}-latest
+    timeout-minutes: 60
+
+    env:
+      STAGING_DIR: staging
+      PACKAGE_DIR: out
+
+    strategy:
+      matrix:
+        configuration: [ Release ]
+        platform:
+          - { name: win-x64,    runner: windows }
+          - { name: linux-x64,  runner: ubuntu  }
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: ./global.json
+
+      - run: dotnet --version
+        shell: bash
+
+      - name: Restore HacToolNX packages
+        shell: bash
+        run: dotnet restore
+
+      - name: Build
+        shell: bash
+        run: dotnet build -c "${{ matrix.configuration }}"
+
+      - name: Run tests
+        shell: bash
+        run: dotnet test -c "${{ matrix.configuration }}" --no-build --filter Category!=Manual
+
+      - name: Publish for Release
+        if: inputs.version_suffix == ''
+        shell: bash
+        run: |
+          dotnet publish "src/HacToolNX/HacToolNX.csproj" -c "${{ matrix.configuration }}" -r "${{ matrix.platform.name }}" -p:PublishReadyToRun=true -o "${{ env.STAGING_DIR }}" --self-contained
+
+      - name: Create output directory
+        shell: bash
+        run: mkdir "${{ env.PACKAGE_DIR }}"
+        
+      - name: Package for Windows
+        if: matrix.platform.name == 'win-x64'
+        shell: bash
+        run: |
+          cp -a LICENSE "${{ env.STAGING_DIR }}/"
+          
+          pushd "${{ env.STAGING_DIR }}"
+          7z a "../${{ env.PACKAGE_DIR }}/hactoolnx-${{ matrix.platform.name }}.zip" .
+          popd
+        
+      - name: Package for Linux
+        if: matrix.platform.name == 'linux-x64'
+        shell: bash
+        run: |
+          cp -a LICENSE "${{ env.STAGING_DIR }}/"
+          
+          pushd "${{ env.STAGING_DIR }}"
+          tar -czvf "../${{ env.PACKAGE_DIR }}/hactoolnx-${{ matrix.platform.name }}.tar.gz" .
+          popd
+
+      - name: Upload package
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.platform.name }}
+          path: "${{ env.PACKAGE_DIR }}/"
