@@ -275,7 +275,3 @@ __pycache__/
 
 !tests/LibHac.Tests/CryptoTests/TestVectors/*
 **/DisasmoBin/
-
-# Files generated at build time
-ResultNameResolver.Generated.cs
-DefaultKeySet.Generated.cs
