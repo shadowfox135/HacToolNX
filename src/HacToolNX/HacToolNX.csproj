@@ -11,9 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LibHacToolNX\LibHacToolNX.csproj">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </ProjectReference>
+    <ProjectReference Include="..\LibHacToolNX\LibHacToolNX.csproj" />
   </ItemGroup>
 
 </Project>
