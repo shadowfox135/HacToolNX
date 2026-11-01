@@ -6,15 +6,33 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   checks: write
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+
+    outputs:
+      version_number: ${{ steps.get-version.outputs.version_number }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Get Version
+        id: get-version
+        shell: bash
+        run: |
+          VERSION=$(dotnet msbuild 'src/HacToolNX/HacToolNX.csproj' -getProperty:VersionPrefix)
+          echo "version_number=$VERSION" >> "$GITHUB_OUTPUT"
+
   build:
     name: ${{ matrix.platform.name }}
     runs-on: ${{ matrix.platform.runner }}-latest
     timeout-minutes: 60
+    needs: prepare
 
     env:
       STAGING_DIR: staging
@@ -87,3 +105,24 @@ jobs:
         with:
           name: ${{ matrix.platform.name }}
           path: "${{ env.PACKAGE_DIR }}/"
+
+  publish:
+    needs: [ prepare, build ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: ./dist
+          merge-multiple: true
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release create "${{ needs.prepare.outputs.version_number }}" \
+            --title "${{ needs.prepare.outputs.version_number }}" \
+            --generate-notes \
+            ./dist/*
