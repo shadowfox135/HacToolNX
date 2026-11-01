@@ -74,7 +74,7 @@ jobs:
         if: inputs.version_suffix == ''
         shell: bash
         run: |
-          dotnet publish "src/HacToolNX/HacToolNX.csproj" -c "${{ matrix.configuration }}" -r "${{ matrix.platform.name }}" -p:PublishReadyToRun=true -o "${{ env.STAGING_DIR }}" --self-contained
+          dotnet publish "src/HacToolNX/HacToolNX.csproj" -c "${{ matrix.configuration }}" -r "${{ matrix.platform.name }}" -p:PublishReadyToRun=true -o "${{ env.STAGING_DIR }}" --self-contained -p:DebugType=embedded
 
       - name: Create output directory
         shell: bash
