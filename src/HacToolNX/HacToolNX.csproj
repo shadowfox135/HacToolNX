@@ -6,6 +6,10 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\LibHacToolNX\LibHacToolNX.csproj" />
   </ItemGroup>
