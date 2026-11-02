@@ -9,6 +9,16 @@ namespace HacToolNX;
 internal class ApplicationArgument
 {
     /// <summary>
+    /// The prefix used to identify an option.
+    /// </summary>
+    public static string OptionPrefix = "--";
+
+    /// <summary>
+    /// The prefix used to identify an alias.
+    /// </summary>
+    public static char AliasPrefix = '-';
+
+    /// <summary>
     /// The key.
     /// </summary>
     public required string Key { get; init; }

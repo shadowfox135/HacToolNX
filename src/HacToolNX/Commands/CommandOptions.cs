@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace HacToolNX.Commands;
@@ -10,9 +8,14 @@ namespace HacToolNX.Commands;
 internal abstract class CommandOptions
 {
     /// <summary>
+    /// Defines the name of the help option.
+    /// </summary>
+    public const string HelpOptionName = "help";
+
+    /// <summary>
     /// Identifies whether help information should be shown.
     /// </summary>
-    [CommandOption("help", Description = "Shows the help information.", Global = true)]
+    [CommandOption(HelpOptionName, Description = "Shows the help information.", Global = true)]
     public bool ShowHelp { get; set; }
 
     /// <summary>

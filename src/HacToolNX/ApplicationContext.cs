@@ -1,7 +1,5 @@
 using HacToolNX.Logging;
 using LibHacToolNX.Logging;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace HacToolNX;
 
@@ -63,11 +61,11 @@ internal class ApplicationContext
                             commandArgs.Add(current);
                         }
 
-                        if (arg.StartsWith("--"))
+                        if (arg.StartsWith(ApplicationArgument.OptionPrefix))
                         {
                             current = new ApplicationArgument { Key = arg.Substring(2) };
                         }
-                        else if (arg.StartsWith('-'))
+                        else if (arg.StartsWith(ApplicationArgument.AliasPrefix))
                         {
                             current = new ApplicationArgument { Key = arg.Substring(1) };
                         }
