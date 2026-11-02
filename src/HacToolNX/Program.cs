@@ -1,10 +1,6 @@
 using HacToolNX.Commands;
 using LibHac.Common.Keys;
-using System;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace HacToolNX;
 
@@ -47,7 +43,7 @@ internal class Program
 
         context.CancellationToken = CancellationSource.Token;
 
-        if (context.CommandName == null)
+        if (context.CommandName == null || context.CommandName == $"{ApplicationArgument.OptionPrefix}{CommandOptions.HelpOptionName}")
         {
             await ShowApplicationHelpAsync();
         }
