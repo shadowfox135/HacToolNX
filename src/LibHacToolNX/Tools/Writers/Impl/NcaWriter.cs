@@ -52,14 +52,6 @@ public class NcaWriter : Writer
                 MergeStream = mergeStream
             };
 
-            ref NcaHeaderStruct header = ref context.Header;
-            header.Magic = Description.Magic;
-            header.DistributionType = (byte)Description.DistributionType;
-            header.ContentType = (byte)Description.ContentType;
-            header.TitleId = Description.TitleId;
-            header.ContentIndex = Description.ContentIndex;
-            header.SdkVersion = Description.SdkVersion;
-
             // The start block does not begin at the expected start block, prepend a buffer to re-align everything
             var initialOffset = sections.Where(o => o.HasValue).Min(o => o!.Value.Description.SectionStartOffset);
             context.StartBlock = (int)(initialOffset / BlockSize);
@@ -136,6 +128,20 @@ public class NcaWriter : Writer
 
             // Flush everything.
             await mergeStream.FlushAsync(cancellationToken);
+
+            // Build the output header.
+            ref NcaHeaderStruct header = ref context.Header;
+            header.Magic = Description.Magic;
+            header.DistributionType = (byte)Description.DistributionType;
+            header.ContentType = (byte)Description.ContentType;
+            header.KeyGeneration1 = 0;
+            header.KeyAreaKeyIndex = 0;
+            header.NcaSize = HeaderSize + mergeStream.Length;
+            header.TitleId = Description.TitleId;
+            header.ContentIndex = Description.ContentIndex;
+            header.SdkVersion = Description.SdkVersion;
+            header.KeyGeneration2 = 0;
+            header.SignatureKeyGeneration = 0;
 
             // Write the header.
             await outStream.WriteAsync(context.HeaderBytes, cancellationToken);
