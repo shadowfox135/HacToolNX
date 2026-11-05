@@ -1,6 +1,7 @@
 using LibHac.Crypto;
 using LibHac.Tools.FsSystem.NcaUtils;
 using System;
+using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -22,6 +23,11 @@ public class NcaWriter : Writer
     /// The description of the archive.
     /// </summary>
     public required NcaDescription Description { get; init; }
+
+    /// <summary>
+    /// Identifies whether the writer should write the output file with an alternate format.
+    /// </summary>
+    public required bool UseAlternateFormat { get; init; }
 
     /// <summary>
     /// Adds a section.
@@ -131,10 +137,20 @@ public class NcaWriter : Writer
 
             // Build the output header.
             ref NcaHeaderStruct header = ref context.Header;
-            header.Magic = Description.Magic;
+
+            if (UseAlternateFormat)
+            {
+                header.Magic = BinaryPrimitives.ReadUInt32LittleEndian("DNCA"u8);
+                header.KeyGeneration1 = 1;
+            }
+            else
+            {
+                header.Magic = Description.Magic;
+                header.KeyGeneration1 = 0;
+            }
+
             header.DistributionType = (byte)Description.DistributionType;
             header.ContentType = (byte)Description.ContentType;
-            header.KeyGeneration1 = 0;
             header.KeyAreaKeyIndex = 0;
             header.NcaSize = HeaderSize + mergeStream.Length;
             header.TitleId = Description.TitleId;

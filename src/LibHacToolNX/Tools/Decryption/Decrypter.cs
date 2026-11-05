@@ -73,9 +73,10 @@ public abstract class Decrypter : IDecrypter
                     var nca = new NcaDecrypter(Logger);
                     await nca.DecryptAsync(fs, outStream, new DecryptionOptions
                     {
-                        KeySet = context.KeySet,
+                        KeySet = context.Options.KeySet,
                         TempDirectory = outDirectory,
-                        IntegrityCheckLevel = context.IntegrityCheckLevel
+                        IntegrityCheckLevel = context.Options.IntegrityCheckLevel,
+                        UseAlternateFormat = context.Options.UseAlternateFormat
                     }, context.RequestAborted);
 
                     result.Add(new ExtractedFileInfo
@@ -108,5 +109,21 @@ public abstract class Decrypter : IDecrypter
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Describes an extracted file.
+    /// </summary>
+    protected class ExtractedFileInfo
+    {
+        /// <summary>
+        /// The original path within the archive.
+        /// </summary>
+        public required string SourcePath { get; init; }
+
+        /// <summary>
+        /// The temporary path where the file is being held.
+        /// </summary>
+        public required FileInfo TemporaryPath { get; init; }
     }
 }

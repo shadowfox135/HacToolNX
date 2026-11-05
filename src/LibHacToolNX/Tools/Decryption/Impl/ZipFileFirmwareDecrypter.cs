@@ -51,12 +51,11 @@ public class ZipFileFirmwareDecrypter : Decrypter
             var context = new ZipFirmwareDecryptionContext
             {
                 Source = source,
+                Options = options,
                 OutputStream = outputStream,
-                KeySet = options.KeySet,
                 PatchDirectory = patchDir,
                 TempDirectory = options.TempDirectory,
-                RequestAborted = cancellationToken,
-                IntegrityCheckLevel = options.IntegrityCheckLevel
+                RequestAborted = cancellationToken
             };
 
             await ExtractAndDecryptContentsAsync(context);
@@ -116,9 +115,10 @@ public class ZipFileFirmwareDecrypter : Decrypter
                 var decrypter = CreateDecrypter(outputFile);
                 await decrypter.DecryptAsync(tempFile, outStream, new DecryptionOptions
                 {
-                    KeySet = context.KeySet,
+                    KeySet = context.Options.KeySet,
                     TempDirectory = tempDirectory,
-                    IntegrityCheckLevel = context.IntegrityCheckLevel
+                    IntegrityCheckLevel = context.Options.IntegrityCheckLevel,
+                    UseAlternateFormat = context.Options.UseAlternateFormat
                 }, context.RequestAborted);
 
                 context.DecryptedFiles.Add(outputFile);
@@ -265,7 +265,8 @@ public class ZipFileFirmwareDecrypter : Decrypter
                         DistributionType = nca.Header.DistributionType,
                         Magic = nca.Header.Magic,
                         SdkVersion = nca.Header.SdkVersion
-                    }
+                    },
+                    UseAlternateFormat = context.Options.UseAlternateFormat
                 };
 
                 ncaWriter.AddSection(sectionDescription.SectionIndex, stageFile,

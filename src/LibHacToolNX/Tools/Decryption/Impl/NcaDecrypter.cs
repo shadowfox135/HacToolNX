@@ -4,7 +4,6 @@ using LibHacToolNX.Logging;
 using LibHacToolNX.Tools.Writers.Impl;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,7 +37,8 @@ public class NcaDecrypter : StreamDecrypter
                 TitleId = header.TitleId,
                 ContentIndex = header.ContentIndex,
                 SdkVersion = header.SdkVersion
-            }
+            },
+            UseAlternateFormat = options.UseAlternateFormat
         };
 
         foreach (var section in sections)

@@ -28,4 +28,10 @@ internal class DecryptCommandOptions : AbstractDecryptCommandOptions
     /// </summary>
     [CommandOption("skip-integrity-checks", Description = "Skip integrity checks while extracting the contents.", DefaultValue = "false")]
     public bool SkipIntegrityChecks { get; set; }
+
+    /// <summary>
+    /// Identifies whether the alternate format for DNCA file layouts should be written. Default: false
+    /// </summary>
+    [CommandOption("use-alternate-format", Description = "Use the alternate DNCA output format.", DefaultValue = "false")]
+    public bool UseAlternateFormat { get; set; }
 }
