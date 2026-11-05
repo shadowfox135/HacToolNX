@@ -2,9 +2,6 @@ using LibHac.Tools.FsSystem;
 using LibHacToolNX.Tools;
 using LibHacToolNX.Tools.Decryption;
 using LibHacToolNX.Tools.Decryption.Impl;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using IDecrypter = LibHacToolNX.Tools.Decryption.IDecrypter;
 using Path = System.IO.Path;
 
@@ -13,7 +10,7 @@ namespace HacToolNX.Commands.Decrypt;
 /// <summary>
 /// An <see cref="ICommand"/> which unpacks the contents of an archive to the local file system.
 /// </summary>
-[Command("decrypt", "Decrypts the contents of an archive.")]
+[Command("decrypt", "Decrypts an archive.")]
 internal class DecryptCommand : AbstractDecryptCommand<DecryptCommandOptions>
 {
     public override async Task ExecuteAsync(ApplicationContext context, DecryptCommandOptions options)
@@ -41,11 +38,11 @@ internal class DecryptCommand : AbstractDecryptCommand<DecryptCommandOptions>
         }
 
         var outputFile = new FileInfo(Path.Combine(destination.FullName,
-            $"{Path.GetFileNameWithoutExtension(source.Name)}.d{source.Extension}"));
+            $"{Path.GetFileNameWithoutExtension(source.Name)}{GetOutputFileExtension(source, options)}"));
 
         if (!options.Overwrite && outputFile.Exists)
         {
-            throw new CommandParameterException($"The destination file '{outputFile.FullName} already exists.");
+            throw new CommandParameterException($"The destination file '{outputFile.FullName}' already exists.");
         }
 
         if (string.IsNullOrWhiteSpace(options.KeySet))
@@ -77,7 +74,8 @@ internal class DecryptCommand : AbstractDecryptCommand<DecryptCommandOptions>
             {
                 KeySet = keySet,
                 TempDirectory = tempDirectory,
-                IntegrityCheckLevel = options.SkipIntegrityChecks ? IntegrityCheckLevel.None : IntegrityCheckLevel.ErrorOnInvalid
+                IntegrityCheckLevel = options.SkipIntegrityChecks ? IntegrityCheckLevel.None : IntegrityCheckLevel.ErrorOnInvalid,
+                UseAlternateFormat = options.UseAlternateFormat
             }, context.CancellationToken);
         }
         catch (TaskCanceledException)
@@ -114,6 +112,21 @@ internal class DecryptCommand : AbstractDecryptCommand<DecryptCommandOptions>
             ".nca" => new NcaDecrypter(context.Logger),
             ".nsp" => new NspDecrypter(context.Logger),
             ".xci" => new XciDecrypter(context.Logger),
+            _ => throw new NotSupportedException($"The file extension '{source.Extension}' is not supported.")
+        };
+    }
+
+    private string GetOutputFileExtension(FileInfo source, DecryptCommandOptions commandOptions)
+    {
+        return (source.Extension.ToLowerInvariant(), commandOptions.UseAlternateFormat) switch
+        {
+            (".zip", _) => ".zip",
+            (".nca", false) => ".d.nca",
+            (".nca", true) => ".dnca",
+            (".xci", false) => ".d.xci",
+            (".xci", true) => ".dxci",
+            (".nsp", false) => ".d.nsp",
+            (".nsp", true) => ".dnsp",
             _ => throw new NotSupportedException($"The file extension '{source.Extension}' is not supported.")
         };
     }

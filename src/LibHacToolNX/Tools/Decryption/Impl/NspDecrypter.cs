@@ -26,11 +26,10 @@ public class NspDecrypter : StreamDecrypter
 
         var context = new DecryptionContext
         {
+            Options = options,
             FileSystem = fileSystem,
             TempDirectory = options.TempDirectory,
-            KeySet = options.KeySet,
-            RequestAborted = cancellationToken,
-            IntegrityCheckLevel = options.IntegrityCheckLevel
+            RequestAborted = cancellationToken
         };
 
         var files = await ExtractContentsAsync(context);

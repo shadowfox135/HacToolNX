@@ -23,4 +23,9 @@ public class DecryptionOptions
     /// Identifies the integrity check level used while extracting the contents.
     /// </summary>
     public required IntegrityCheckLevel IntegrityCheckLevel { get; init; }
+
+    /// <summary>
+    /// Identifies whether the alternate format for DNCA file layouts should be written. Default: false
+    /// </summary>
+    public required bool UseAlternateFormat { get; set; }
 }

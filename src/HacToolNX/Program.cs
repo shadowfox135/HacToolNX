@@ -55,7 +55,7 @@ internal class Program
             }
             catch (CommandNotSupportedException)
             {
-                await Console.Error.WriteLineAsync($"ERR: The command '{context.CommandName}' is not supported. For more information on available commands, see help information.");
+                await Console.Error.WriteLineAsync($"ERR: The command '{context.CommandName}' is not supported. For more information on available commands, see --help information.");
                 Environment.ExitCode = 1;
             }
         }
@@ -84,7 +84,7 @@ internal class Program
             }
             catch (CommandParameterException ex)
             {
-                await Console.Error.WriteLineAsync($"ERR: {ex.Message} For more information on available command options, see help information.");
+                await Console.Error.WriteLineAsync($"ERR: {ex.Message} For more information on available command options, see {context.CommandName} --help information.");
                 Environment.ExitCode = 1;
             }
         }

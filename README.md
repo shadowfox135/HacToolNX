@@ -7,7 +7,7 @@ HacToolNX is an example program that uses LibHac to perform various functions ag
 Usage: hactoolnx.exe command [options...]
 
 Commands:
-  decrypt              Decrypts the contents of an archive.
+  decrypt              Decrypts an archive.
   unpack               Unpacks the contents of an archive.
 Options:
   --help               Show the help information for a command.
@@ -19,10 +19,14 @@ The following examples show how to use the tool to perform various tasks. For th
 #### Decrypting archives
 `hactoolnx.exe decrypt -s "<file>" -o "<destination>" -k "<keys>"`
 
+NOTE: If you need the file in a .dnca, .dnsp, or .dxci format, you can use the `--use-alternate-format` option available on the decrypt command.
+
 #### Decrypting firmware
 The firmware decryption will also handle rebuilding the digest manifests necessary to pass any validation checks that may be used to verify the firmware.
 
 `hactoolnx.exe decrypt -s "<file>" -o "<destination>" -k "<keys>" --firmware`
+
+NOTE: If you need the firmware in .dnca format, you can use the optional `--use-alternate-format` option available on the decrypt command.
 
 #### Unpacking archives
 The following example depicts how to unpack an archive while keeping the internal content structure:

@@ -28,11 +28,10 @@ public class XciDecrypter : StreamDecrypter
         {
             Source = source,
             Xci = xci,
+            Options = options,
             TempDirectory = options.TempDirectory,
-            KeySet = options.KeySet,
             RequestAborted = cancellationToken,
-            OutputStream = outputStream,
-            IntegrityCheckLevel = options.IntegrityCheckLevel
+            OutputStream = outputStream
         };
 
         await ExtractPartitionsAsync(context);
@@ -196,7 +195,8 @@ public class XciDecrypter : StreamDecrypter
                 RomAreaStartPage = context.RomAreaStartPage,
                 ValidDataEndPage = context.ValidDataEndPage
             },
-            RootPartition = context.RootPartition
+            RootPartition = context.RootPartition,
+            UseAlternateFormat = context.Options.UseAlternateFormat
         };
 
         await writer.WriteAsync(context.OutputStream, context.RequestAborted);

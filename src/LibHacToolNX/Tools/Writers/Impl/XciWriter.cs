@@ -20,6 +20,11 @@ public class XciWriter : Writer
     public required XciDescription Description { get; init; }
 
     /// <summary>
+    /// Identifies whether the writer should write the output file with an alternate format.
+    /// </summary>
+    public required bool UseAlternateFormat { get; init; }
+
+    /// <summary>
     /// The file to use as the root file system.
     /// </summary>
     public FileInfo? RootPartition { get; set; }
@@ -47,7 +52,14 @@ public class XciWriter : Writer
             ValidDataEndPage = Description.ValidDataEndPage
         };
 
-        HeaderSignature.CopyTo(header.Magic.Span);
+        if (UseAlternateFormat)
+        {
+            "DXCI"u8.CopyTo(header.Magic.Span);
+        }
+        else
+        {
+            HeaderSignature.CopyTo(header.Magic.Span);
+        }
 
         var hash = await GenerateRootPartitionHeaderHashAsync(cancellationToken);
         if (hash != null)
